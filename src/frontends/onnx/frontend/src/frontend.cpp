@@ -32,6 +32,9 @@
 using namespace ov;
 using namespace ov::frontend::onnx;
 using namespace ov::frontend::onnx::common;
+using ::ONNX_NAMESPACE::ModelProto;
+
+typedef std::shared_ptr<ModelProto> ModelProtoPtr;
 
 ONNX_FRONTEND_C_API ov::frontend::FrontEndVersion get_api_version() {
     return OV_FRONTEND_API_VERSION;
@@ -82,6 +85,17 @@ InputModel::Ptr FrontEnd::load_impl(const std::vector<ov::Any>& variants) const 
         }
 #endif
         return std::make_shared<InputModel>(*stream, enable_mmap, m_extensions);
+    }
+    if (variants[0].is<ModelProtoPtr>()) {
+        return std::make_shared<InputModel>(variants[0].as<ModelProtoPtr>(), m_extensions);
+    }
+    if (variants[0].is<ModelProto*>()) {
+        return std::make_shared<InputModel>(std::make_shared<ModelProto>(*variants[0].as<ModelProto*>()), m_extensions);
+    }
+    if (variants[0].is<uint64_t>()) {
+        void* model_proto_ptr = reinterpret_cast<void*>(variants[0].as<uint64_t>());
+        return std::make_shared<InputModel>(std::make_shared<ModelProto>(*static_cast<ModelProto*>(model_proto_ptr)),
+                                            m_extensions);
     }
     return nullptr;
 }
@@ -213,7 +227,18 @@ bool FrontEnd::supported_impl(const std::vector<ov::Any>& variants) const {
         StreamRewinder rwd{*stream};
         return is_valid_model(*stream);
     }
-
+    if (variants[0].is<ModelProtoPtr>()) {
+        std::cerr << "shared_ptr<ModelProto> is supported\n";
+        return true;
+    }
+    if (variants[0].is<ModelProto*>()) {
+        std::cerr << "ModelProto* is supported\n";
+        return true;
+    }
+    if (variants[0].is<uint64_t>()) {
+        std::cerr << "uint64_t as a ModelProto* is supported\n";
+        return true;
+    }
     return false;
 }
 
