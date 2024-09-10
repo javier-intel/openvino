@@ -137,10 +137,37 @@ std::shared_ptr<ov::ISyncInferRequest> CompiledModel::create_sync_infer_request(
         "the \"ov::ISyncInferRequest\" class");
 }
 
+template <typename T>
+auto extract_vector_data(std::vector<T>& vec) {
+    union U {
+        std::vector<T> _v;
+        ~U() {}
+    } u = {std::move(vec)};
+    return;
+};
+
+template <class ElemT, class TraitsT>
+class custom_string : public std::basic_string<ElemT, TraitsT> {
+public:
+    using base = std::basic_string<ElemT, TraitsT>;
+
+    custom_string(ElemT* p, size_t size, size_t capacity) {
+        bool [[maybe_unused]] b = base::_Move_assign_from_buffer(p, size, capacity);
+    }
+};
+using custom_string_char = custom_string<char, std::char_traits<char>>;
+
 void CompiledModel::export_model(std::ostream& stream) const {
     _logger.debug("CompiledModel::export_model");
-    const auto&& blob = _compiler->getCompiledNetwork(_networkPtr);
-    stream.write(reinterpret_cast<const char*>(blob.data()), blob.size());
+    auto blob = std::move(_compiler->getCompiledNetwork(_networkPtr));
+    auto ptr = blob.data();
+    auto length = blob.size();
+    auto cap = blob.capacity();
+    extract_vector_data(blob);
+    custom_string_char cs((char*)ptr, length, cap);
+    std::ostringstream oss(std::move(cs));
+    *((std::ostringstream*)&stream) = std::move(oss);
+
     std::stringstream str;
     str << "Blob size: " << blob.size() << ", hash: " << std::hex << hash(blob);
     _logger.info(str.str().c_str());
