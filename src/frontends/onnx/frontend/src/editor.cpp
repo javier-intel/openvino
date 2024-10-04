@@ -349,7 +349,14 @@ ONNXModelEditor::ONNXModelEditor(std::shared_ptr<ModelProto> model_proto, fronte
       m_extensions{std::move(extensions)},
       m_pimpl{new ONNXModelEditor::Impl{model_proto}, [](Impl* impl) {
                   delete impl;
-              }} {}
+              }} {
+    OPENVINO_ASSERT(model_proto->ir_version() == openvino_onnx::Version::IR_VERSION,
+                    "ONNX version",
+                    openvino_onnx::Version::IR_VERSION,
+                    " expected, version ",
+                    model_proto->ir_version(),
+                    " received");
+}
 
 const std::string& ONNXModelEditor::model_path() const {
     return m_model_path;
