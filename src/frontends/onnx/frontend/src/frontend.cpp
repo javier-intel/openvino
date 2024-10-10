@@ -228,15 +228,12 @@ bool FrontEnd::supported_impl(const std::vector<ov::Any>& variants) const {
         return is_valid_model(*stream);
     }
     if (variants[0].is<ModelProtoPtr>()) {
-        std::cerr << "shared_ptr<ModelProto> is supported\n";
         return true;
     }
     if (variants[0].is<ModelProto*>()) {
-        std::cerr << "ModelProto* is supported\n";
         return true;
     }
     if (variants[0].is<uint64_t>()) {
-        std::cerr << "uint64_t as a ModelProto* is supported\n";
         return true;
     }
     return false;
