@@ -74,4 +74,6 @@ std::map<std::string, ov::TensorVector> get_remote_input_tensors(
     const std::vector<benchmark_app::InputsInfo>& app_inputs_info,
     const ov::CompiledModel& compiledModel,
     size_t num_requests);
+
+std::map<std::string, ov::Tensor> get_remote_output_tensors(const ov::CompiledModel& compiledModel);
 }  // namespace npu

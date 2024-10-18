@@ -950,6 +950,7 @@ int main(int argc, char* argv[]) {
         bool useNpuMem = false;
 
         std::map<std::string, ov::TensorVector> inputsData;
+        std::map<std::string, ov::Tensor> hostOutputData;
         if (isFlagSetInCommandLine("use_device_mem")) {
             if (device_name.find("GPU") == 0) {
                 inputsData = ::gpu::get_remote_input_tensors(inputFiles,
@@ -986,6 +987,13 @@ int main(int argc, char* argv[]) {
                     batchSize,
                     app_inputs_info[0],
                     nireq);
+                for (auto& output : compiledModel.outputs()) {
+                    auto& name = output.get_any_name();
+                    benchmark_app::InputInfo info;
+                    info.type = output.get_element_type();
+                    info.dataShape = output.get_shape();
+                    hostOutputData[name] = get_random_tensor({name, info});
+                }
             }
         }
         // ----------------- 10. Measuring performance
@@ -1061,6 +1069,15 @@ int main(int argc, char* argv[]) {
                     for (auto& output : compiledModel.outputs()) {
                         inferRequest->set_tensor(output.get_any_name(), outputTensors[output.get_any_name()]);
                     }
+                } else if (useNpuMem) {
+                    auto outputTensors = ::npu::get_remote_output_tensors(compiledModel);
+                    for (auto& output : compiledModel.outputs()) {
+                        inferRequest->set_tensor(output.get_any_name(), outputTensors[output.get_any_name()]);
+                    }
+                } else {
+                    for (auto& output : compiledModel.outputs()) {
+                        inferRequest->set_tensor(output.get_any_name(), hostOutputData[output.get_any_name()]);
+                    }
                 }
                 ++i;
             }
@@ -1086,6 +1103,15 @@ int main(int argc, char* argv[]) {
                     ::gpu::get_remote_output_tensors(compiledModel, inferRequest->get_output_cl_buffer());
                 for (auto& output : compiledModel.outputs()) {
                     inferRequest->set_tensor(output.get_any_name(), outputTensors[output.get_any_name()]);
+                }
+            } else if (useNpuMem) {
+                auto outputTensors = ::npu::get_remote_output_tensors(compiledModel);
+                for (auto& output : compiledModel.outputs()) {
+                    inferRequest->set_tensor(output.get_any_name(), outputTensors[output.get_any_name()]);
+                }
+            } else {
+                for (auto& output : compiledModel.outputs()) {
+                    inferRequest->set_tensor(output.get_any_name(), hostOutputData[output.get_any_name()]);
                 }
             }
         }
@@ -1145,6 +1171,16 @@ int main(int argc, char* argv[]) {
                         ::gpu::get_remote_output_tensors(compiledModel, inferRequest->get_output_cl_buffer());
                     for (auto& output : compiledModel.outputs()) {
                         inferRequest->set_tensor(output.get_any_name(), outputTensors[output.get_any_name()]);
+                    }
+                } else if (useNpuMem) {
+                    auto outputTensors =
+                        ::npu::get_remote_output_tensors(compiledModel);
+                    for (auto& output : compiledModel.outputs()) {
+                        inferRequest->set_tensor(output.get_any_name(), outputTensors[output.get_any_name()]);
+                    }
+                } else {
+                    for (auto& output : compiledModel.outputs()) {
+                        inferRequest->set_tensor(output.get_any_name(), hostOutputData[output.get_any_name()]);
                     }
                 }
             }

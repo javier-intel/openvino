@@ -238,4 +238,19 @@ std::map<std::string, ov::TensorVector> get_remote_input_tensors(
     }
     return remoteTensors;
 }
+
+std::map<std::string, ov::Tensor> get_remote_output_tensors(const ov::CompiledModel& compiledModel) {
+    std::map<std::string, ov::Tensor> remoteTensors;
+    auto context = compiledModel.get_context();
+    auto& zeroContext = static_cast<ov::intel_npu::level_zero::ZeroContext&>(context);
+
+    for (auto& output : compiledModel.outputs()) {
+        auto tensor = zeroContext.create_l0_host_tensor(output.get_element_type(),
+                                                        output.get_shape(),
+                                                        ov::intel_npu::TensorType::OUTPUT);
+        remoteTensors[output.get_any_name()] = tensor;
+    }
+
+    return remoteTensors;
+}
 }  // namespace npu
