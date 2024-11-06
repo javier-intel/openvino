@@ -848,6 +848,20 @@ ov::SoPtr<ov::ICompiledModel> ov::CoreImpl::compile_model(const std::string& mod
     return compiled_model;
 }
 
+ov::SoPtr<ov::ICompiledModel> ov::CoreImpl::compile_model_to_disk(const std::shared_ptr<const ov::Model>& model,
+                                                                  const std::string& device_name,
+                                                                  const std::string& filepath,
+                                                                  const ov::AnyMap& config) const {
+    OV_ITT_SCOPED_TASK(ov::itt::domains::OV, "Core::compile_model_to_disk");
+    auto parsed = parseDeviceNameIntoConfig(device_name, config);
+    auto plugin = get_plugin(parsed._deviceName);
+    ov::SoPtr<ov::ICompiledModel> compiled_model;
+
+    compiled_model = plugin.compile_model_to_disk(model, filepath, parsed._config);
+
+    return compiled_model;
+}
+
 ov::SoPtr<ov::ICompiledModel> ov::CoreImpl::import_model(std::istream& model,
                                                          const std::string& device_name,
                                                          const ov::AnyMap& config) const {

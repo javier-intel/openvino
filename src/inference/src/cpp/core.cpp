@@ -151,6 +151,16 @@ CompiledModel Core::compile_model(const std::shared_ptr<const ov::Model>& model,
     });
 }
 
+CompiledModel Core::compile_model_to_disk(const std::shared_ptr<const ov::Model>& model,
+                           const std::string& device_name,
+                           const std::string& filepath,
+                           const AnyMap& config) const {
+    OV_CORE_CALL_STATEMENT({
+        auto exec = _impl->compile_model_to_disk(model, device_name, filepath, config);
+        return {exec._ptr, exec._so};
+    });
+}
+
 void Core::add_extension(const std::string& library_path) {
     try {
         add_extension(ov::detail::load_extensions(library_path));

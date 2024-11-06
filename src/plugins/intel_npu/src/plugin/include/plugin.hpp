@@ -38,6 +38,10 @@ public:
                                                       const ov::AnyMap& properties,
                                                       const ov::SoPtr<ov::IRemoteContext>& context) const override;
 
+    std::shared_ptr<ov::ICompiledModel> compile_model_to_disk(const std::shared_ptr<const ov::Model>& model,
+                                                      const std::string& filepath,
+                                                      const ov::AnyMap& properties) const override;
+
     ov::SoPtr<ov::IRemoteContext> create_context(const ov::AnyMap& remote_properties) const override;
 
     ov::SoPtr<ov::IRemoteContext> get_default_context(const ov::AnyMap& remote_properties) const override;

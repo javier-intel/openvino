@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
+#include <fstream>
+
 #include "openvino/runtime/iplugin.hpp"
 
 #include "openvino/op/convert.hpp"
@@ -77,6 +79,17 @@ std::shared_ptr<ov::ICompiledModel> ov::IPlugin::compile_model(const std::string
     OPENVINO_ASSERT(core);
     auto model = core->read_model(model_path, std::string());
     return compile_model(model, properties);
+}
+
+std::shared_ptr<ov::ICompiledModel> ov::IPlugin::compile_model_to_disk(const std::shared_ptr<const ov::Model>& model,
+                                                               const std::string& filepath,
+                                                               const ov::AnyMap& properties) const {
+    auto core = get_core();
+    OPENVINO_ASSERT(core);
+    auto& compiled_model = compile_model(model, properties);
+    std::ofstream fs(filepath, std::ios::binary);
+    compiled_model->export_model(fs);
+    return compiled_model;
 }
 
 std::unordered_set<std::string> ov::get_supported_nodes(

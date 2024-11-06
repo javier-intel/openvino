@@ -620,6 +620,17 @@ ov::Any Plugin::get_property(const std::string& name, const ov::AnyMap& argument
     OPENVINO_THROW("Unsupported configuration key: ", name);
 }
 
+std::shared_ptr<ov::ICompiledModel> Plugin::compile_model_to_disk(const std::shared_ptr<const ov::Model>& model,
+                                                                  const std::string& filepath,
+                                                                  const ov::AnyMap& properties) const {
+    OV_ITT_SCOPED_TASK(itt::domains::NPUPlugin, "Plugin::compile_model_to_disk");
+
+    ov::AnyMap combined_properties{properties};
+    combined_properties[ov::intel_npu::compiled_output_file.name()] = filepath;
+
+    return compile_model(model, combined_properties);
+}
+
 std::shared_ptr<ov::ICompiledModel> Plugin::compile_model(const std::shared_ptr<const ov::Model>& model,
                                                           const ov::AnyMap& properties) const {
     OV_ITT_SCOPED_TASK(itt::domains::NPUPlugin, "Plugin::compile_model");

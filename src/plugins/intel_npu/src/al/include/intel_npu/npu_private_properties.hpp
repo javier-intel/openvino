@@ -229,6 +229,13 @@ static constexpr ov::Property<LegacyPriority, ov::PropertyMutability::RO> legacy
 /**
  * @brief [Only for NPU Plugin]
  * Type: Arbitrary string.
+ * This option allows to specify the file path to export the compiled model to directly from the driver.
+ */
+static constexpr ov::Property<std::string> compiled_output_file{"COMPILED_OUTPUT_FILE"};
+
+/**
+ * @brief [Only for NPU Plugin]
+ * Type: Arbitrary string.
  * This option allows to specify device.
  * The plugin accepts any value given through this option. If the device is not available, either the driver or the
  * compiler will throw an exception depending on the flow running at the time.

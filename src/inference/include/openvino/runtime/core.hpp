@@ -357,6 +357,21 @@ public:
     }
 
     /**
+     * @brief Creates a compiled model from a source model object and saves it to a file for future use.
+     *
+     * This can be more efficient than compile_mofrl(Model) + export_model(fstream).
+     *
+     * @param model Model object acquired from Core::read_model.
+     * @param device_name Name of a device to load a model to.
+     * @param filepath Name of the file and path where the compile model object is saved.
+     * @param properties Optional map of pairs: (property name, property value) relevant only for this load
+     * operation.
+     */
+    CompiledModel compile_model_to_disk(const std::shared_ptr<const ov::Model>& model,
+                                const std::string& device_name, const std::string &filepath,
+                                const AnyMap& properties = {}) const;
+
+    /**
      * @brief Registers an extension to a Core object.
      * @param library_path Path to the library with ov::Extension.
      */

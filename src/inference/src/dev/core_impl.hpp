@@ -5,8 +5,8 @@
 #pragma once
 
 #include "cache_guard.hpp"
-#include "dev/plugin.hpp"
 #include "cache_manager.hpp"
+#include "dev/plugin.hpp"
 #include "openvino/core/any.hpp"
 #include "openvino/core/extension.hpp"
 #include "openvino/core/so_extension.hpp"
@@ -275,6 +275,11 @@ public:
                                                 const std::string& device_name,
                                                 const ov::AnyMap& config) const override;
 
+    ov::SoPtr<ov::ICompiledModel> compile_model_to_disk(const std::shared_ptr<const ov::Model>& model,
+                                        const std::string& device_name,
+                                        const std::string& filepath,
+                                        const ov::AnyMap& config = {}) const override;
+
     ov::SoPtr<ov::ICompiledModel> import_model(std::istream& model,
                                                const std::string& device_name = {},
                                                const ov::AnyMap& config = {}) const override;
@@ -291,7 +296,9 @@ public:
 
     ov::SoPtr<ov::IRemoteContext> create_context(const std::string& device_name, const AnyMap& args) const override;
 
-    ov::AnyMap get_supported_property(const std::string& device_name, const ov::AnyMap& config, const bool keep_core_property = true) const override;
+    ov::AnyMap get_supported_property(const std::string& device_name,
+                                      const ov::AnyMap& config,
+                                      const bool keep_core_property = true) const override;
 
     ov::SoPtr<ov::IRemoteContext> get_default_context(const std::string& device_name) const override;
 

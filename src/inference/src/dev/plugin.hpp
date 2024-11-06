@@ -51,6 +51,10 @@ public:
                                             const ov::SoPtr<ov::IRemoteContext>& context,
                                             const ov::AnyMap& properties) const;
 
+    SoPtr<ov::ICompiledModel> compile_model_to_disk(const std::shared_ptr<const ov::Model>& model,
+                                                    const std::string& filepath,
+                                                    const ov::AnyMap& properties) const;
+
     ov::SupportedOpsMap query_model(const std::shared_ptr<const ov::Model>& model, const ov::AnyMap& properties) const;
 
     SoPtr<ov::ICompiledModel> import_model(std::istream& model, const ov::AnyMap& properties) const;
@@ -78,4 +82,3 @@ public:
 };
 
 }  // namespace ov
-

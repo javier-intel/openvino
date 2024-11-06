@@ -133,6 +133,23 @@ public:
                                                         const ov::AnyMap& config) const = 0;
 
     /**
+     * @brief Creates a compiled model from a source model object and saves it to a file for future use.
+     *
+     * This can be more efficient than compile_mofrl(Model) + export_model(fstream).
+     *
+     * @param model Model object acquired from Core::read_model.
+     * @param device_name Name of a device to load a model to.
+     * @param filepath Name of the file and path where the compile model object is saved.
+     * @param properties Optional map of pairs: (property name, property value) relevant only for this load
+     * operation.
+     * @return A pointer to compiled model
+     */
+    virtual ov::SoPtr<ov::ICompiledModel> compile_model_to_disk(const std::shared_ptr<const ov::Model>& model,
+                               const std::string& device_name,
+                               const std::string& filepath,
+                               const AnyMap& properties = {}) const = 0;
+
+    /**
      * @brief Creates a compiled model from a previously exported model
      * @param model model stream
      * @param device_name Name of device load executable model on
@@ -241,7 +258,9 @@ public:
      * @param keep_core_property Whether to return core-level properties
      * @return map of properties that are supported by device
      */
-    virtual AnyMap get_supported_property(const std::string& full_device_name, const AnyMap& properties, const bool keep_core_property = true) const = 0;
+    virtual AnyMap get_supported_property(const std::string& full_device_name,
+                                          const AnyMap& properties,
+                                          const bool keep_core_property = true) const = 0;
 
     virtual bool device_supports_model_caching(const std::string& device_name) const = 0;
 

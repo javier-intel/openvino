@@ -131,6 +131,16 @@ public:
                                                               const ov::SoPtr<ov::IRemoteContext>& context) const = 0;
 
     /**
+     * @brief Compiles model from ov::Model object
+     * @param model A model object acquired from ov::Core::read_model or source construction
+     * @param properties A ov::AnyMap of properties relevant only for this load operation
+     * @return Created Compiled Model object
+     */
+    virtual std::shared_ptr<ov::ICompiledModel> compile_model_to_disk(const std::shared_ptr<const ov::Model>& model,
+                                                                      const std::string& filepath,
+                                                                      const ov::AnyMap& properties) const;
+
+    /**
      * @brief Sets properties for plugin, acceptable keys can be found in openvino/runtime/properties.hpp
      * @param properties ov::AnyMap of properties
      */

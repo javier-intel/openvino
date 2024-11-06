@@ -64,6 +64,12 @@ ov::SoPtr<ov::ICompiledModel> ov::Plugin::compile_model(const std::shared_ptr<co
     OV_PLUGIN_CALL_STATEMENT(return {m_ptr->compile_model(model, properties, context), m_so});
 }
 
+ov::SoPtr<ov::ICompiledModel> ov::Plugin::compile_model_to_disk(const std::shared_ptr<const ov::Model>& model,
+                                                                      const std::string& filepath,
+                                                                      const ov::AnyMap& properties) const {
+    OV_PLUGIN_CALL_STATEMENT(return {m_ptr->compile_model_to_disk(model, filepath, properties), m_so});
+}
+
 ov::SupportedOpsMap ov::Plugin::query_model(const std::shared_ptr<const ov::Model>& model,
                                             const ov::AnyMap& properties) const {
     OV_PLUGIN_CALL_STATEMENT(return m_ptr->query_model(model, properties));

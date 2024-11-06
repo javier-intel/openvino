@@ -160,6 +160,28 @@ struct COMPILATION_MODE_PARAMS final : OptionBase<COMPILATION_MODE_PARAMS, std::
 };
 
 //
+// COMPILED_OUTPUT_FILE
+//
+
+struct COMPILED_OUTPUT_FILE final : OptionBase<COMPILED_OUTPUT_FILE, std::string> {
+    static std::string_view key() {
+        return ov::intel_npu::compiled_output_file.name();
+    }
+
+    static std::string defaultValue() {
+        return {};
+    }
+
+    static OptionMode mode() {
+        return OptionMode::CompileTime;
+    }
+
+    static bool isPublic() {
+        return false;
+    }
+};
+
+//
 // DPU_GROUPS
 //
 
